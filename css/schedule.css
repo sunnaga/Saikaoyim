@@ -1,0 +1,53 @@
+
+.withlineSchedule{
+    padding: 0 5rem;
+    display: block;
+}
+
+.withlineSchedule:before {
+    content: "";
+    display: inline-block;
+    border: 2px solid #000;
+    width: 1em;
+    vertical-align: middle;
+    margin: 0 0.5em;
+}
+
+.withlineSchedule:after {
+    content: "";
+    display: inline-block;
+    border: 2px solid #000;
+    width: 32em;
+    vertical-align: middle;
+    margin: 0 0.5em;
+}
+
+.listsOfSchedule{
+    padding: 50px 0;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.listsOfSchedule li{
+    list-style: none;
+}
+
+.listsOfSchedule li a{ 
+    font-size: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    text-decoration: none;
+    color: black;
+}
+
+.listsOfSchedule i{
+    background-color: brown;
+    width: 100px;
+    height: 100px;
+    padding: 15px;
+    font-size: 50px;
+    border-radius: 50%;
+    color: white;
+}

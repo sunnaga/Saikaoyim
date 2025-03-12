@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เขต5ส.</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/schedule.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Sriracha&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <nav class="schedule-menu kanit">
+            <ul>
+                <li><a href="../html/schedule.html">หน้าแรก</a></li>
+                <li><a href="../html/area.html">5ส.</a></li>
+                <li><a href="../html/room1.html">ตรวจห้อง (เช้า)</a></li>
+                <li><a href="../html/room2.html">ตรวจห้อง (เย็น)</a></li>
+                <li><a href="#" class="highlight">ประวัติ</a></li>
+            </ul>
+        </nav>
+
+        <section class="kanit history-section">
+
+            <h1 class="history-header">ประวัติการตรวจเวร</h1>
+
+            <div id="history">
+
+            </div>
+
+        </section>
+
+
+    </div>
+</body>
+<script>
+    async function fetchhistory() {
+        const history = document.getElementById('history');
+
+        try {
+            const response = await fetch('http://localhost:3000/history');
+
+            if (!response.ok) { // เช็คสถานะ HTTP
+                throw new Error('Network response was not ok');
+            }
+
+            const users = await response.json();
+
+            const uniqueDates = new Set(); // ใช้ Set เพื่อเก็บวันที่ที่ไม่ซ้ำกัน
+            const sectionTitles = new Map(); // เก็บสถานะว่าหัวข้อของประเภทนี้ถูกเพิ่มไปแล้วหรือยัง
+
+            // จัดกลุ่มข้อมูลตามวันที่
+            const groupedByDate = users.reduce((acc, user) => {
+                if (!acc[user.date]) {                                              
+                    acc[user.date] = [];                                              
+                }                                              
+                acc[user.date].push(user);                                              
+                return acc;                                              
+            }, {});                                              
+
+            console.log(groupedByDate + 'date')
+            // แสดงผลข้อมูลตามวันที่และประเภท                                              
+            Object.keys(groupedByDate).forEach(date => {                                              
+                // แสดงวันที่                                              
+                let historyDateBox = document.createElement('h2');                                              
+                historyDateBox.textContent = date;                                              
+                historyDateBox.className = 'dateTitle'                                              
+                history.appendChild(historyDateBox);                                              
+                                              
+                const validTables = {                                   
+                    'area': 'ตรวจเขตพื้นที่ 5 ส.',                                              
+                    'roomone': 'ตรวจห้องภาคเช้า',                                              
+                    'roomtwo': 'ตรวจห้องภาคเย็น'                                              
+                };                                   
+
+                const dateUsers = groupedByDate[date];
+                const sectionTitlesForDate = new Map(); // แยกการจัดการหัวข้อประเภทตามวัน
+                console.log(dateUsers)
+                // แสดงข้อมูลตามประเภทของห้องในวันนั้น
+                dateUsers.forEach(user => {
+                    if (validTables[user.source_table]) {
+                        // เช็คว่าเคยเพิ่มหัวข้อของประเภทนี้ไปหรือยัง
+                        if (!sectionTitlesForDate.has(user.source_table)) {
+                            let title = document.createElement('h1');
+                            title.className = 'title'
+                            title.textContent = validTables[user.source_table]; // แสดงหัวข้อประเภท
+                            history.appendChild(title);
+                            sectionTitlesForDate.set(user.source_table, true); // บันทึกว่าหัวข้อนี้ถูกเพิ่มแล้ว
+                        }
+
+                        let h = document.createElement('p');
+                        h.textContent = `ห้อง: ${user.room} | สถานะ: ${user.pass} | หมายเหตุ: ${user.description}`;
+                        history.appendChild(h);
+                    }
+                });
+            });
+        } catch (error) {
+            console.error('Error fetching history:', error);
+            history.innerHTML = '<p>ไม่สามารถโหลดข้อมูลได้ในขณะนี้</p>';
+        }
+    }
+
+    // เรียกใช้งานฟังก์ชัน
+    fetchhistory();
+
+
+
+</script>
+
+</html>
